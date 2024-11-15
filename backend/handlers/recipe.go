@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/models"
-	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/db"
+	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/models"
+	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/db"
 )
 
 func CreateRecipeHandler(w http.ResponseWriter, r *http.Request) {
