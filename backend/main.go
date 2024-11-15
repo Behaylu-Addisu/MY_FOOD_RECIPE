@@ -6,9 +6,9 @@ import (
 	"os"
 	"net/http"
 	"github.com/gorilla/mux"
-	// "github.com/joho/godotenv"
-	// "github.com/jmoiron/sqlx"
-	// _ "github.com/lib/pq"
+	"github.com/joho/godotenv"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq" 
 	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/handlers"
 )
 
