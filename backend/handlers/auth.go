@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/dgrijalva/jwt-go"
-	"github.com/Behaylu-Addisu/backend/models"
-	"github.com/Behaylu-Addisu/backend/db"
-	"golang.org/x/crypto/bcrypt"
+	 "github.com/dgrijalva/jwt-go"
+	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/models"
+	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/db"
+	 "golang.org/x/crypto/bcrypt"
 )
 
 var jwtSecret = []byte(os.Getenv("my_favorite_jwt_secret_key_is_getye"))
