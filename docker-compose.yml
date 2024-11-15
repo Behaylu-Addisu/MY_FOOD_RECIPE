@@ -1,0 +1,66 @@
+
+services:
+  # Frontend Service (Vue3/Nuxt3)
+  frontend:
+    build: ./frontend
+    container_name: vue_frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - food_network
+    depends_on:
+      - backend
+
+  # Backend Service (Golang API)
+  backend:
+    build: ./backend
+    container_name: golang_backend
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://behaylu:ngst@postgres:5432/food_recipe_db
+      JWT_SECRET: my_favorite_jwt_secret_key_is_getye
+    networks:
+      - food_network
+    depends_on:
+      - postgres
+      - hasura
+
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: behaylu
+      POSTGRES_PASSWORD: ngst
+      POSTGRES_DB: food_recipe_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - food_network
+
+  # Hasura GraphQL Engine Service
+  hasura:
+    image: hasura/graphql-engine:v2.18.0
+    container_name: hasura
+    ports:
+      - "8081:8080"
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://behaylu:ngst@postgres:5432/food_recipe_db
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: getye
+      HASURA_GRAPHQL_JWT_SECRET: '{"type": "HS256", "key": "my_favorite_jwt_secret_key_is_getye"}'
+    depends_on:
+      - postgres
+    networks:
+      - food_network
+
+networks:
+  food_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

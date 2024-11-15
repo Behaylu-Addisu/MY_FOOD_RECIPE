@@ -1,0 +1,147 @@
+-- 1. Users Table
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    profile_picture TEXT, -- URL to the profile image
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Categories Table
+CREATE TABLE categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Recipes Table
+CREATE TABLE recipes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category_id UUID REFERENCES categories(id),
+    prep_time INT, -- in minutes
+    featured_image TEXT, -- URL of the featured image
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. Recipe Steps Table
+CREATE TABLE recipe_steps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    step_number INT NOT NULL,
+    step_description TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5. Ingredients Table
+CREATE TABLE ingredients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    ingredient_name VARCHAR(255) NOT NULL,
+    quantity VARCHAR(100), -- e.g., '2 cups'
+    unit VARCHAR(50), -- e.g., 'grams'
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. Likes Table
+CREATE TABLE likes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Bookmarks Table
+CREATE TABLE bookmarks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Comments Table
+CREATE TABLE comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    comment_text TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 9. Ratings Table
+CREATE TABLE ratings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    rating_value INT CHECK (rating_value >= 1 AND rating_value <= 5), -- Rating between 1 and 5
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. File Uploads Table
+CREATE TABLE file_uploads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    file_url TEXT NOT NULL, -- URL or File reference
+    file_type VARCHAR(255), -- MIME type, e.g., 'image/png'
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Payments Table
+CREATE TABLE payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_status VARCHAR(50) CHECK (payment_status IN ('success', 'failed', 'pending')),
+    payment_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 12. Audit Logs Table
+CREATE TABLE audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    action VARCHAR(255) NOT NULL, -- e.g., 'create', 'edit', 'delete'
+    resource_type VARCHAR(255) NOT NULL, -- e.g., 'recipe', 'comment'
+    resource_id UUID NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for better performance (especially for frequently queried columns)
+
+-- Index on user_id and recipe_id for likes, bookmarks, and ratings
+CREATE INDEX idx_likes_user_id ON likes(user_id);
+CREATE INDEX idx_likes_recipe_id ON likes(recipe_id);
+
+CREATE INDEX idx_bookmarks_user_id ON bookmarks(user_id);
+CREATE INDEX idx_bookmarks_recipe_id ON bookmarks(recipe_id);
+
+CREATE INDEX idx_ratings_user_id ON ratings(user_id);
+CREATE INDEX idx_ratings_recipe_id ON ratings(recipe_id);
+
+-- Index on user_id for payments
+CREATE INDEX idx_payments_user_id ON payments(user_id);
+
+-- Index on recipe_id for comments and ingredients
+CREATE INDEX idx_comments_recipe_id ON comments(recipe_id);
+CREATE INDEX idx_ingredients_recipe_id ON ingredients(recipe_id);
+
+-- Index on category_id for recipes
+CREATE INDEX idx_recipes_category_id ON recipes(category_id);
+
+-- Index on created_at for sorting in lists
+CREATE INDEX idx_recipes_created_at ON recipes(created_at);
+CREATE INDEX idx_comments_created_at ON comments(created_at);
+CREATE INDEX idx_ratings_created_at ON ratings(created_at);
