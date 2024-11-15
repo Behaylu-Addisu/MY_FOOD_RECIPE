@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"net/http"
 	"github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/handlers"
 )
 
@@ -16,14 +16,19 @@ var db *sqlx.DB
 var err error
 
 func main() {
-	// Load environment variables
+	// Load environment variables from .env file
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Connect to PostgreSQL database
-	dbURL := os.Getenv("postgres://behaylu:ngst@postgres:5432/food_recipe_db")
+	// Get the database URL from the environment variable
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL environment variable not set")
+	}
+
+	// Connect to the PostgreSQL database
 	db, err = sqlx.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal("Failed to connect to database: ", err)
@@ -45,7 +50,8 @@ func main() {
 	// Start the server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8080" // Default port
 	}
+	log.Printf("Server starting on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }
