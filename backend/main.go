@@ -49,7 +49,7 @@ func main() {
 	// Start the server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8081" // Default port
+		port = "8082" // Default port
 	}
 	log.Printf("Server starting on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
