@@ -3,9 +3,9 @@ package db
 
 import (
     "github.com/jmoiron/sqlx"
-    "github.com/lib/pq"
+    _ "github.com/lib/pq"
     "log"
-    "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/models"
+    "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/models"
 )
 
 var Db *sqlx.DB

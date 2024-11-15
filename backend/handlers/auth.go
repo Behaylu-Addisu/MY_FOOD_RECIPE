@@ -7,8 +7,8 @@ import (
     "os"
     "time"
     "github.com/dgrijalva/jwt-go"
-   "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/models"
-    "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/backend/db"
+   "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/models"
+    "github.com/Behaylu-Addisu/MY_FOOD_RECIPE/tree/main/backend/db"
     "golang.org/x/crypto/bcrypt"
 )
 
